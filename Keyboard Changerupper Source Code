@@ -1,0 +1,122 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
+using Microsoft.Win32;
+
+
+
+namespace Change_Keyboard_Keys
+{
+
+    class uniValues
+    {
+        public static int keyChangeNumber = 0;
+        public static string regFile = @"C:\Keyboard Change\ScancodeChange.txt";
+        public static string keyChange;
+        public static string scanCodeMap = "Scancode Map";
+    }
+
+    class keyArray
+    {
+        public static string[] keys = { "1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "z", "x", "c", "v", "b", "n", "m", "`", "-", "=", "[", "]", ";", "'", "#", @"\", ",", ".", "/", "num1", "num2", "num3", "num4", "num5", "num6", "num7", "num8", "num9", "num0", "num.", "num-", "num+", "num/", "numenter", "numlock", "tab", "esc", "caps", "lshift", "lctrl", "lwin", "rwin", "lalt", "space", "ralt", "rctrl", "uparrow", "dnarrow", "larrow", "rarrow", "bkspace", "enter", "rshift", "incert", "home", "pgup", "pgdn", "end", "prtsc", "scrlock", "pause", "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12", "disable" };
+        public static string[] keyValue = { "02,00,", "03,00,", "04,00,", "05,00,", "06,00,", "07,00,", "08,00,", "09,00,", "0A,00,", "0B,00,", "10,00,", "11,00,", "12,00,", "13,00,", "14,00,", "15,00,", "16,00,", "17,00,", "18,00,", "19,00,", "1E,00,", "1F,00,", "20,00,", "21,00,", "22,00,", "23,00,", "24,00,", "25,00,", "26,00,", "2C,00,", "2D,00,", "2E,00,", "2F,00,", "30,00,", "31,00,", "32,00,", "29,00,", "0C,00,", "0D,00,", "1A,00,", "1B,00,", "27,00,", "28,00,", "2B,00,", "56,00,", "33,00,", "34,00,", "35,00,", "4F,00,", "50,00,", "51,00,", "4B,00,", "4C,00,", "4D,00,", "47,00,", "48,00,", "49,00,", "52,00,", "53,00,", "4A,00,", "4E,00,", "35,E0,", "1C,E0,", "45,00,", "0F,00,", "01,00,", "3A,00,", "2A,00,", "1D,00,", "5B,E0,", "5B,E0,", "38,00,", "39,00,", "38,E0,", "1D,E0,", "48,E0,", "50,E0,", "4B,E0,", "4D,E0,", "0E,00,", "1C,00,", "36,00,", "52,E0,", "47,E0,", "49,E0,", "51,E0,", "4F,E0,", "A2,E0,", "46,00,", "45,00,", "3B,00,", "3C,00,", "3D,00,", "3E,00,", "3F,00,", "40,00,", "41,00,", "42,00,", "43,00,", "44,00,", "57,00,", "58,00,", "00,00," };
+
+        class Program
+        {
+            static void Main(string[] args)
+            {
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Keyboard Layout", true))
+                {
+                    string[] values = key.GetValueNames();
+
+                    if (Directory.Exists(@"C:\Keyboard Change"))
+                    {
+                        Directory.Delete(@"C:\Keyboard Change", true);
+                    }
+
+                    if (values.Any(uniValues.scanCodeMap.Contains))
+                    {
+                        string deleteChange;
+                        Console.WriteLine();
+                        Console.WriteLine("You already have a scancode implemented, Would you like to undo the changes made? ");
+                        Console.WriteLine("Press " + "y" + " or " + "b" + " for yes. To continue without undoing press enter.");
+                        deleteChange = Console.ReadLine().ToLower().TrimStart().TrimEnd();
+                        if (deleteChange == "y")
+                        {
+                            deleteReg();
+                        }
+                        else if (deleteChange == "b")
+                        {
+                            deleteReg();
+                        }
+                    }
+                }
+
+                Console.WriteLine("This console application will reassign/disbale keys by writing in the registry.");
+                Console.WriteLine("Please note this will change the function of the whole key e.g. if you disable the 5 key you will also disable %");
+                Console.WriteLine();
+                Console.WriteLine("[{0}]", string.Join(", ", keyArray.keys));
+                Console.Write("How many keys would you like to change? ");
+
+                uniValues.keyChangeNumber = Convert.ToInt32(Console.ReadLine());
+
+                Directory.CreateDirectory(@"C:\Keyboard Change\");
+                File.WriteAllText(uniValues.regFile, @"Windows Registry Editor Version 5.00
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]
+""Scancode Map""=hex:00,00,00,00,00,00,00,00,0" + uniValues.keyChangeNumber + ",00,00,00,");
+
+                int appendLoop = 1;
+                while (appendLoop <= uniValues.keyChangeNumber)
+                {
+                    string keyBeingChanged;
+                    string keyChangingTo;
+                    Console.WriteLine("Key Change " + appendLoop);
+
+                    Console.WriteLine("What key are you changing? ");
+                    keyBeingChanged = Console.ReadLine().ToLower().TrimStart().TrimEnd();
+
+                    Console.WriteLine("What key are you changing it to? ");
+                    keyChangingTo = Console.ReadLine().ToLower().TrimStart().TrimEnd();
+
+                    int arrayIndex0 = Array.IndexOf(keyArray.keys, keyBeingChanged);
+                    string keyValue0 = keyArray.keyValue[arrayIndex0];
+                    int arrayIndex1 = Array.IndexOf(keyArray.keys, keyChangingTo);
+                    string keyValue1 = keyArray.keyValue[arrayIndex1];
+
+                    using (StreamWriter sw = File.AppendText(uniValues.regFile))
+                    {
+                        sw.Write(keyValue1);
+                        sw.Write(keyValue0);
+                    }
+                    appendLoop++;
+                }
+
+                using (StreamWriter sw = File.AppendText(uniValues.regFile))
+                {
+                    sw.Write("00,00,00,00");
+                }
+
+                Directory.CreateDirectory(@"C:\Keyboard Change\Change");
+                File.Move(uniValues.regFile, @"C:\Keyboard Change\Change\ScancodeChange.reg");
+                Process.Start(@"C:\Keyboard Change\Change\ScancodeChange.reg");
+                Console.WriteLine("To finish the procress press any key on this console and restart the computer.");
+                Console.ReadLine();
+                Directory.Delete(@"C:\Keyboard Change", true);
+            }
+        
+
+            }
+            static void deleteReg()
+            {   
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SYSTEM\CurrentControlSet\Control\Keyboard Layout", true))
+                {
+                        key.DeleteValue(uniValues.scanCodeMap);   
+                }
+                Console.WriteLine("Close this program and restart for changes to take affect.");
+                Console.ReadLine();
+            }
+            }
