@@ -5,10 +5,15 @@ I thought of many ways to get rid of these keys such as physically taking out th
 It was then I learned about scancode maps and after looking through I finally found a decent guide/explanation to them and made the changes manually.
 Once that was done I figured since I went through the trouble of learning how to implement scancode maps into Windows, I might as well set that to be my first project and make a program to reassign keys based on user inputs.
 
-And that’s basically it. 
+As for how the program turned out in the end. The entire thing looks kinda sloppy to be honest and if I wanted to I would go back and re-write the whole thing again. Make it so the program either writes to registry directly, or that it makes files somewhere other than the root directory of Windows so the program wouldn't have to ask for admin before starting, since running the .reg file asks for a prompt anyway. 
+
+Given more time it would also be possible to assign keys to op Windows 10 apps like calculator or calendar. As of right now this program is pretty much only good for pranks and fixing poor laptop keyboard layouts, but it could do more. 
+
+However I've already gotten a good idea of what I want to do next, so that’s what I'll be doing on this for now. The program works and frankly for a first-time project I'm happy enough with just that. 
+
+
 If you don't want to use my program that’s understandable (I frankly didn't want to use others since the whole thing seems sketch), for those people I've unboringed a lot of other people’s explanations into just the things you need to know to get rid of those pesky keys.
 look at my scancode table to know what to write, please bear in mind that table was made with UK keyboards in mind. US and other keyboards have some different keys, though most of them are the same.
-
 
 Got to HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout 
 Make a binary value and call it "Scancode Map"
